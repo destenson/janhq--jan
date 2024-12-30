@@ -3,6 +3,7 @@ import {
   InferenceEngine,
   DefaultEngineVariant,
   Engines,
+  EngineConfig,
   EngineVariant,
   EngineReleased,
   executeOnMain,
@@ -77,6 +78,18 @@ export default class JSONEngineManagementExtension extends EngineManagementExten
   }
 
   /**
+   * @returns A Promise that resolves to an object of list engines.
+   */
+  async getRemoteModels(name: string): Promise<any> {
+    return this.queue.add(() =>
+      ky
+        .get(`${API_URL}/v1/models/remote/${name}`)
+        .json<any>()
+        .then((e) => e)
+    ) as Promise<any>
+  }
+
+  /**
    * @param name - Inference engine name.
    * @returns A Promise that resolves to an array of installed engine.
    */
@@ -130,10 +143,7 @@ export default class JSONEngineManagementExtension extends EngineManagementExten
    * @param name - Inference engine name.
    * @returns A Promise that resolves to intall of engine.
    */
-  async installEngine(
-    name: InferenceEngine,
-    engineConfig: { variant: string; version?: string }
-  ) {
+  async installEngine(name: string, engineConfig: EngineConfig) {
     return this.queue.add(() =>
       ky
         .post(`${API_URL}/v1/engines/${name}/install`, { json: engineConfig })
@@ -145,10 +155,7 @@ export default class JSONEngineManagementExtension extends EngineManagementExten
    * @param name - Inference engine name.
    * @returns A Promise that resolves to unintall of engine.
    */
-  async uninstallEngine(
-    name: InferenceEngine,
-    engineConfig: { variant: string; version: string }
-  ) {
+  async uninstallEngine(name: InferenceEngine, engineConfig: EngineConfig) {
     return this.queue.add(() =>
       ky
         .delete(`${API_URL}/v1/engines/${name}/install`, { json: engineConfig })
@@ -176,7 +183,7 @@ export default class JSONEngineManagementExtension extends EngineManagementExten
    */
   async setDefaultEngineVariant(
     name: InferenceEngine,
-    engineConfig: { variant: string; version: string }
+    engineConfig: EngineConfig
   ) {
     return this.queue.add(() =>
       ky
@@ -188,9 +195,11 @@ export default class JSONEngineManagementExtension extends EngineManagementExten
   /**
    * @returns A Promise that resolves to update engine.
    */
-  async updateEngine(name: InferenceEngine) {
+  async updateEngine(name: InferenceEngine, engineConfig?: EngineConfig) {
     return this.queue.add(() =>
-      ky.post(`${API_URL}/v1/engines/${name}/update`).then((e) => e)
+      ky
+        .post(`${API_URL}/v1/engines/${name}/update`, { json: engineConfig })
+        .then((e) => e)
     ) as Promise<{ messages: string }>
   }
 

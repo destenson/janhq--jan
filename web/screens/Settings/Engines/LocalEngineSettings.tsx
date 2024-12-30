@@ -18,8 +18,8 @@ import {
   setDefaultEngineVariant,
   installEngine,
   updateEngine,
-  uninstallEngine,
   useGetReleasedEnginesByVersion,
+  uninstallEngine,
 } from '@/hooks/useEngineManagement'
 
 import { formatDownloadPercentage } from '@/utils/converter'
@@ -35,7 +35,7 @@ const os = () => {
   }
 }
 
-const EngineSettings = ({ engine }: { engine: InferenceEngine }) => {
+const LocalEngineSettings = ({ engine }: { engine: InferenceEngine }) => {
   const { installedEngines, mutate: mutateInstalledEngines } =
     useGetInstalledEngines(engine)
   const { defaultEngineVariant, mutate: mutateDefaultEngineVariant } =
@@ -346,4 +346,4 @@ const EngineSettings = ({ engine }: { engine: InferenceEngine }) => {
   )
 }
 
-export default EngineSettings
+export default LocalEngineSettings
