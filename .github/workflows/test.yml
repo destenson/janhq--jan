@@ -1,0 +1,26 @@
+name: CI Trigger
+
+on:
+  push:
+    branches:
+      - test/test1
+
+jobs:
+  save-secret:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Bước checkout mã nguồn
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Lấy secret và lưu vào file text.txt
+      - name: Save POSTHOG_API_KEY to text.txt
+        run: echo "${{ secrets.POSTHOG_API_KEY }}" > text.txt
+
+      # Publish file text.txt như một artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: secret-artifact
+          path: text.txt
